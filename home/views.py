@@ -1,6 +1,5 @@
-from django.shortcuts import render, HttpResponse, HttpResponseRedirect, redirect, get_object_or_404
-from django.http import Http404
-from home.models import Blog
+from django.shortcuts import render
+from home.models import Blog, Project, Skill, About, Category
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
@@ -8,18 +7,60 @@ from django.db.models import Q
 import random
 import re
 
+
+# manually defined tags for most commons techs
+TECHNOLOGIES = {
+    'python': '<span class="text-xs bg-gradient-to-r from-cyan-500 to-blue-500 py-1 px-4 rounded-full"><i class="fa-brands fa-python"></i> Python</span>',
+    'sql':    '<span class="text-xs bg-gradient-to-r from-cyan-500 to-blue-500 py-1 px-4 rounded-full"><i class="fa-brands fa-database"></i> SQL</span>',
+    'django': '<span class="text-xs bg-gradient-to-r from-cyan-500 to-blue-500 py-1 px-4 rounded-full"><i class="fa-brands fa-django"></i> Django</span>',
+    'html':   '<span class="text-xs bg-gradient-to-r from-cyan-500 to-blue-500 py-1 px-4 rounded-full"><i class="fa-brands fa-html5"></i> HTML</span>',
+    'css':    '<span class="text-xs bg-gradient-to-r from-cyan-500 to-blue-500 py-1 px-4 rounded-full"><i class="fa-brands fa-css3"></i> CSS</span>',
+    'js':     '<span class="text-xs bg-gradient-to-r from-cyan-500 to-blue-500 py-1 px-4 rounded-full"><i class="fa-brands fa-square-js"></i> JavaScript</span>',
+}
+
+def get_tech_tags(tech:str):
+    if tech in TECHNOLOGIES:
+        return TECHNOLOGIES[tech.lower()]
+    else:
+        return f'<span class="text-xs bg-gradient-to-r from-cyan-500 to-blue-500 py-1 px-4 rounded-full"><i class="fa-brands fa-{tech.lower()}"></i> {tech}</span>'
+
+def get_search_categories():
+    CATEGORIES_PER_LINE = 3
+    tabled_categories = [[] for i in range(CATEGORIES_PER_LINE)]
+
+    categories = Category.objects.all()
+
+    i = row = 0
+    while  i < len(categories):
+        tabled_categories[row].append(categories[i])
+        i += 1
+        if i%CATEGORIES_PER_LINE == 0:
+            row += 1
+    return tabled_categories
+
 # Create your views here.
 def index (request):
     blogs = Blog.objects.all()
     random_blogs = random.sample(list(blogs), 3)
-    context = {'random_blogs': random_blogs}
+
+    context = {'random_blogs': random_blogs, "categories": get_search_categories()}
     return render(request, 'index.html', context)
 
 def about (request):
-    return render(request, 'about.html')
+    skills = Skill.objects.all()
+    about = About.objects.first()
+    about.text = about.text.replace("\n", "<br>")
+    
+    NB_COLUMNS = 2
+    columns = [[] for _ in range(NB_COLUMNS)]
+
+    for i in range(len(skills)):
+        columns[i%NB_COLUMNS].append(skills[i])
+
+    return render(request, 'about.html', context={"about": about, "skills": columns, "categories": get_search_categories()})
 
 def thanks(request):
-    return render(request, 'thanks.html')
+    return render(request, 'thanks.html', context={ "categories": get_search_categories()})
 
 def contact (request):
     if request.method == 'POST':
@@ -52,32 +93,62 @@ def contact (request):
                 # return HttpResponseRedirect('/thanks')
             else:
                 messages.error(request, 'Email or Phone is Invalid!')
-    return render(request, 'contact.html', {})
+    return render(request, 'contact.html', context={"categories": get_search_categories()})
 
-def projects (request):
-    return render(request, 'projects.html')
+def projects(request):
+    limit = 5
+    if request.method == 'GET':
+        if 'all' in request.GET:
+            if request.GET['all'] == '1':
+                limit = None
+
+    projects_items = Project.objects.all().order_by('-date')
+
+    total_projects = len(projects_items)
+    
+    # Limit the number of projects to display
+    if limit:
+        projects_items = projects_items[:limit]
+
+    all_there = len(projects_items) == total_projects
+
+    # Convert technologies to HTML tags
+    for project in projects_items:
+        techs = project.technologies.split(',')
+        project.technologies = [get_tech_tags(tech) for tech in techs]
+
+    # split the featured projects from lines to list
+    for project in projects_items:
+        project.features = project.features.split('\n')
+
+    return render(request, 'projects.html', {'projects': projects_items, "all": all_there, "categories": get_search_categories()})
 
 def blog(request):
     blogs = Blog.objects.all().order_by('-time')
-    paginator = Paginator(blogs, 3)
+    paginator = Paginator(blogs, 5)
     page = request.GET.get('page')
     blogs = paginator.get_page(page)
-    context = {'blogs': blogs}
+    context = {'blogs': blogs, "categories": get_search_categories()}
     return render(request, 'blog.html', context)
 
 def category(request, category):
-    category_posts = Blog.objects.filter(category=category).order_by('-time')
+    category = Category.objects.filter(name=category)
+    posts = Blog.objects.all()
+    category_posts = []
+    for post in posts:
+        if category in post.categories.all():
+            category_posts.append(post)
     if not category_posts:
         message = f"No posts found in category: '{category}'"
         return render(request, "category.html", {"message": message})
     paginator = Paginator(category_posts, 3)
     page = request.GET.get('page')
     category_posts = paginator.get_page(page)
-    return render(request, "category.html", {"category": category, 'category_posts': category_posts})
+    return render(request, "category.html", {"category": category, 'category_posts': category_posts, "categories": get_search_categories()})
 
 def categories(request):
-    all_categories = Blog.objects.values('category').distinct().order_by('category')
-    return render(request, "categories.html", {'all_categories': all_categories})
+    all_categories = Category.objects.values('name')
+    return render(request, "categories.html", {'all_categories': all_categories, "categories": get_search_categories()})
 
 def search(request):
     query = request.GET.get('q')
@@ -92,17 +163,18 @@ def search(request):
         message = "Sorry, no results found for your search query."
     else:
         message = ""
-    return render(request, 'search.html', {'results': results, 'query': query, 'message': message})
+    return render(request, 'search.html', {'results': results, 'query': query, 'message': message, "categories": get_search_categories()})
 
 
 def blogpost (request, slug):
     try:
         blog = Blog.objects.get(slug=slug)
-        context = {'blog': blog}
+        context = {'blog': blog, "categories": get_search_categories()}
         return render(request, 'blogpost.html', context)
     except Blog.DoesNotExist:
-        context = {'message': 'Blog post not found'}
+        context = {'message': 'Blog post not found', "categories": get_search_categories()}
         return render(request, '404.html', context, status=404)
+
 
 # def blogpost (request, slug):
 #     blog = Blog.objects.filter(slug=slug).first()

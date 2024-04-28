@@ -11,14 +11,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/hostmind/host@latest/static/index.css">
-    <title>{% block title %}{% endblock title %} - ashish</title>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}" />
+    <title>{% block title %}{% endblock title %} - Petchou</title>
+
     {% tailwind_css %}
 </head>
 <body>
     {% comment %} <div class="z-50 fixed hidden inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
 	id="my-modal"></div> {% endcomment %}
     <nav class="nav bg-gray-900 text-white flex justify-between items-center p-3 px-8 md:px-20">
-        <a href="/" class="text-lg font-mono">ashish</a>
+        <a href="/" class="text-lg font-mono" style="display: flex; flex-direction: rows; align-items: center">
+          <img src="{% static 'images/favicon.png' %}" alt="Icon" style="height: max(2vw, 60px); margin-right: 1vw">
+          Petchou
+        </a>
         <div class='flex space-x-4 text-xl'>
             <i class="searchBtn mt-1 bi bi-search text-sm cursor-pointer md:hidden"></i>
             <i class="nav-btn bi bi-list cursor-pointer md:hidden"></i>
@@ -26,7 +31,6 @@
         <div class="bg-gray-900 hidden items-center md:block">
             <a href="/" class="p-2 px-3 my-1 text-white rounded-[8px] hover:bg-gray-800">Home</a>
             <a href="/about" class="p-2 px-3 my-1 text-white rounded-[8px] hover:bg-gray-800">About</a>
-            <a href="/contact" class="p-2 px-3 my-1 text-white rounded-[8px] hover:bg-gray-800">Contact</a>
             <a href="/blog" class="p-2 px-3 my-1 text-white rounded-[8px] hover:bg-gray-800">Blog</a>
             <a href="/projects" class="p-2 px-3 my-1 text-white rounded-[8px] hover:bg-gray-800">Projects</a>
             <i class="searchBtn1 p-2 px-3 my-1 text-white rounded-[8px] hover:bg-gray-800 mt-1 bi bi-search text-sm cursor-pointer"></i>
@@ -36,7 +40,6 @@
     <div class="mob-nav bg-gray-900 hidden flex-col items-center w-full h-64 md:hidden">
         <a href="/" class="p-2 px-36 my-1 text-white rounded-[8px] hover:bg-gray-800">Home</a>
         <a href="/about" class="p-2 px-36 my-1 text-white rounded-[8px] hover:bg-gray-800">About</a>
-        <a href="/contact" class="p-2 px-36 my-1 text-white rounded-[8px] hover:bg-gray-800">Contact</a>
         <a href="/blog" class="p-2 px-36 my-1 text-white rounded-[8px] hover:bg-gray-800 ">Blog</a>
         <a href="/projects" class="p-2 px-36 my-1 text-white rounded-[8px] hover:bg-gray-800 ">Projects</a>
       </div>
@@ -45,7 +48,7 @@
       
     <footer class='bg-gray-900 text-white p-8 pb-2 grid md:grid-cols-3 md:gap-10 lg:gap-20 xl:gap-30 2xl:gap-40 md:px-40'>
         <div class='blog-name'>
-            <p class='text-xl font-bold'>ashish<p>
+            <p class='text-xl font-bold'>Petchou<p>
             <p class='my-3 text-justify'>Explore my developer portfolio and blog to empower your development skills and create something amazing together.</p>
         </div>
         <div class='pages'>
@@ -58,13 +61,15 @@
         <div class='socials'>
             <p class='text-xl font-bold'>Follow me<p>
             <ul class='my-3 flex text-xl'>
-                <li><a href='/' class='hover:text-blue-100'><i class="bi bi-github"></i></a></li>
-                <li class='px-2'><a href='/' class='hover:text-blue-100'><i class="bi bi-linkedin"></i></a></li>
+                <li><a href='https://github.com/PetchouDev' class='hover:text-blue-100'><i class="bi bi-github"></i></a></li>
+                <li class='px-2'><a href='https://fr.linkedin.com/in/math%C3%A9o-daumas-a3a30b261' class='hover:text-blue-100'><i class="bi bi-linkedin"></i></a></li>
             </ul>
         </div>
     </footer>
     <div class='bg-slate-800 text-white text-justify flex justify-center items-center'>
-        <p class='p-2'>Copyright &copy;<script>document.write(new Date().getFullYear())</script> <span class="text-blue-300 text-justify"><a href="/" target="_blank">ashish</a></span> All Rights Reserved</p>
+        <p class='p-2'>Copyright &copy;<script>document.write(new Date().getFullYear())</script> <span class="text-blue-300 text-justify"><a href="/" target="_blank">Petchou</a></span> All Rights Reserved</p>
+        <br>
+        <p>Forked from the amazing  work of <a href="https://github.com/ashish-makes/django-tailwind-blog">Ashish</a>.</p>
     </div>
 
     <div class="searchModal text-white z-50 fixed bottom-0 inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center">
@@ -73,7 +78,7 @@
         </div>
         <div class='modal animate-reveal flex items-center justify-center h-screen'>
             <div class="bg-gray-900 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-sm sm:w-full">
-                <form class="px-10 py-10">
+                <form class="px-10 py-10" id="search-form">
                     <div class="text-xl text-center font-extrabold mb-4">Search</div>
       
                     <!-- Search Input -->
@@ -84,21 +89,31 @@
                 </form>
                 <!-- Close Button -->
                 <button class="searchCloseBtn m-2 absolute top-0 right-0 font-medium transition-colors p-4 focus:outline-none" aria-label="Close"><i class="bi bi-x text-xl"></i></button>
-    
+                  
+                <!-- Categories -->
                 <div class='mx-3'>
-                <div class='flex md:flex-grow-2 justify-start space-x-3 text-sm md:text-base m-4 -mt-10 mb-8'>
-                  <a href='/category/Python' class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Python</button></a>
-                  <a href='/category/JavaScript' class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>JavaScript</button></a>
-                  <a href='/category/Design'  class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Design</button></a>
-                </div>
-    
-                <div class='flex md:flex-grow-2 justify-start space-x-3 text-sm md:text-base m-4 -mt-10'>
-                  <a href='/category/Web Design' class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Web Design</button></a>
-                  <a href='/category/Frameworks' class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Frameworks</button></a>
-                </div>
-    
-                <div class='flex md:flex-grow-2 justify-start space-x-3 text-sm md:text-base m-4 -mt-6'>
-                    <a href='/category/Tools'  class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Tools</button></a>
+                  {% for row in categories %}
+                  {% if row %}
+                    <div class='flex md:flex-grow-2 justify-start space-x-3 text-sm md:text-base m-4 -mt-10 mb-8'>
+                      {% for category in row %}
+                        <a href='/category/{{ category.name }}' class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>{{ category.name }}</button></a>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                  {% endfor %}
+                  {% comment %}<div class='flex md:flex-grow-2 justify-start space-x-3 text-sm md:text-base m-4 -mt-10 mb-8'>
+                    <a href='/category/Infra' class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Infra</button></a>
+                    <a href='/category/Informations' class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Informations</button></a>
+                    <a href='/category/Code'  class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Code</button></a>
+                  </div>
+      
+                  <div class='flex md:flex-grow-2 justify-start space-x-3 text-sm md:text-base m-4 -mt-10'>
+                    <a href='/category/Cyber' class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Cyber</button></a>
+                    <a href='/category/Other' class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Other</button></a>
+                  </div>{% endcomment %}
+      
+                  <div class='flex md:flex-grow-2 justify-start space-x-3 text-sm md:text-base m-4 -mt-6'>
+                      <a href='/projects'  class='sm:text-[12px] '><button class='bg-gray-800 p-2 px-4 rounded-[6px] hover:bg-blue-600 outline hover:outline-none outline-slate-700 transition delay-75 ease-in-out my-3'>Projects</button></a>
                   </div>
                 </div>
             </div>
@@ -203,6 +218,7 @@
   const searchCloseBtn = document.querySelector(".searchCloseBtn");
   const searchSubmitBtn = document.querySelector(".searchSubmitBtn");
   const searchInput = document.querySelector(".searchInput");
+  const searchForm = document.getElementById("search-form");
 
   // Show Search Modal function
   function showSearchModal() {
@@ -217,7 +233,10 @@
   // Submit Search Form function
   function submitSearchForm(event) {
     event.preventDefault();
+
     const searchQuery = searchInput.value.trim();
+    console.log("Query : " + searchQuery);
+
     if (!searchQuery) {
       searchInput.classList.add('shake');
       setTimeout(function() {
@@ -225,14 +244,27 @@
       }, 500);
       return;
     }
-    window.open("/search/?q=" + encodeURIComponent(searchQuery));
-  }  
+    // redirect user to the query result page
+    console.log('Redirect to : /search?q=' + searchQuery)
+    window.location.href = '/search?q=' + searchQuery;
+    }
+    
+  // override default form post to trigger custom method instead
+  searchForm.onsubmit = function (event) {
+    submitSearchForm(event);
+    return false;
+  };
 
   // Add event listeners
   searchBtn.addEventListener("click", showSearchModal);
   searchBtn1.addEventListener("click", showSearchModal);
   searchCloseBtn.addEventListener("click", hideSearchModal);
   searchSubmitBtn.addEventListener("click", submitSearchForm);
+  searchInput.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      submitSearchForm;
+    }
+});
 </script>
 
 </html>
